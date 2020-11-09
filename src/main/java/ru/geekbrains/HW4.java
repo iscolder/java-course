@@ -88,12 +88,18 @@ public class HW4 {
 			int currentNumberOfSymbols = 0; // общее количесво символов в ряду (DOT_X+ DOT_EMPTY)
 			int[] bestTurnHolder = new int[2];
 
+			boolean hasPriority = false;
+
 			for (int j = 0; j < map.length; j++) {
 				if (map[i][j] == DOT_X) { // нашли фишку пользователя
 					currentNumberOfUserDots++;
 					currentNumberOfSymbols++;
 				} else if (map[i][j] == DOT_EMPTY) { // нашли пустую фишку
-					if (((j > 0 && map[i][j - 1] == DOT_X) || (j < map.length - 1 && map[i][j + 1] == DOT_X))) { // пытаемся быть ближе к пользовательской фишке
+					if (j > 0 && map[i][j - 1] == DOT_X && j < map.length - 1 && map[i][j + 1] == DOT_X) { // пытаемся быть ближе к пользовательской фишке
+						hasPriority = true;
+						bestTurnHolder[0] = i;
+						bestTurnHolder[1] = j;
+					} else if (((j > 0 && map[i][j - 1] == DOT_X) || (j < map.length - 1 && map[i][j + 1] == DOT_X)) && !hasPriority) { // пытаемся быть ближе к пользовательской фишке
 						bestTurnHolder[0] = i;
 						bestTurnHolder[1] = j;
 					}
@@ -122,12 +128,18 @@ public class HW4 {
 			int currentNumberOfSymbols = 0;
 			int[] bestTurnHolder = new int[2];
 
+			boolean hasPriority = false;
+
 			for (int j = 0; j < rotatedMap.length; j++) {
 				if (rotatedMap[i][j] == DOT_X) {
 					currentNumberOfUserDots++;
 					currentNumberOfSymbols++;
 				} else if (rotatedMap[i][j] == DOT_EMPTY) {
-					if (((j > 0 && rotatedMap[i][j - 1] == DOT_X) || (j < rotatedMap.length - 1 && rotatedMap[i][j + 1] == DOT_X))) {
+					if (j > 0 && rotatedMap[i][j - 1] == DOT_X && j < rotatedMap.length - 1 && rotatedMap[i][j + 1] == DOT_X) { // пытаемся быть ближе к пользовательской фишке
+						hasPriority = true;
+						bestTurnHolder[0] = j; // здесь нужно использовать индексы до rotation
+						bestTurnHolder[1] = rotatedMap.length - 1 - i; // здесь нужно использовать индексы до rotation
+					} else if (((j > 0 && rotatedMap[i][j - 1] == DOT_X) || (j < rotatedMap.length - 1 && rotatedMap[i][j + 1] == DOT_X)) && !hasPriority) {
 						bestTurnHolder[0] = j; // здесь нужно использовать индексы до rotation
 						bestTurnHolder[1] = rotatedMap.length - 1 - i; // здесь нужно использовать индексы до rotation
 					}
@@ -159,6 +171,8 @@ public class HW4 {
 
 			int[] bestTurnHolder = new int[2];
 
+			boolean hasPriority = false;
+
 			for (int i = 0; i < map.length; i++) {
 				for (int j = 0; j < map.length; j++) {
 					if (j - i == counter) {
@@ -166,7 +180,11 @@ public class HW4 {
 							currentNumberOfUserDots++;
 							numberOfSymbols++;
 						} else if (map[i][j] == DOT_EMPTY) {
-							if (((j > 0 && i > 0 && map[i - 1][counter + i - 1] == DOT_X) || (j < map.length - 1 && i < map.length - 1 && map[i + 1][counter + i + 1] == DOT_X))) {
+							if (((j > 0 && i > 0 && map[i - 1][counter + i - 1] == DOT_X) && (j < map.length - 1 && i < map.length - 1 && map[i + 1][counter + i + 1] == DOT_X))) {
+								hasPriority = true;
+								bestTurnHolder[0] = i;
+								bestTurnHolder[1] = j;
+							} else if (((j > 0 && i > 0 && map[i - 1][counter + i - 1] == DOT_X) || (j < map.length - 1 && i < map.length - 1 && map[i + 1][counter + i + 1] == DOT_X)) && !hasPriority) {
 								bestTurnHolder[0] = i;
 								bestTurnHolder[1] = j;
 							}
@@ -196,8 +214,8 @@ public class HW4 {
 		do {
 			int currentNumberOfUserDots = 0;
 			int[] bestTurnHolder = new int[2];
-
 			int numberOfSymbols = 0;
+			boolean hasPriority = false;
 
 			for (int i = 0; i < rotatedMap.length; i++) {
 
@@ -207,7 +225,11 @@ public class HW4 {
 							currentNumberOfUserDots++;
 							numberOfSymbols++;
 						} else if (rotatedMap[i][j] == DOT_EMPTY) {
-							if (((j > 0 && i > 0 && rotatedMap[i - 1][counter + i - 1] == DOT_X) || (j < rotatedMap.length - 1 && i < rotatedMap.length - 1 && rotatedMap[i + 1][counter + i + 1] == DOT_X))) {
+							if (((j > 0 && i > 0 && rotatedMap[i - 1][counter + i - 1] == DOT_X) && (j < rotatedMap.length - 1 && i < rotatedMap.length - 1 && rotatedMap[i + 1][counter + i + 1] == DOT_X))) {
+								hasPriority = true;
+								bestTurnHolder[0] = j;
+								bestTurnHolder[1] = rotatedMap.length - 1 - i;
+							} else if (((j > 0 && i > 0 && rotatedMap[i - 1][counter + i - 1] == DOT_X) || (j < rotatedMap.length - 1 && i < rotatedMap.length - 1 && rotatedMap[i + 1][counter + i + 1] == DOT_X)) && !hasPriority) {
 								bestTurnHolder[0] = j;
 								bestTurnHolder[1] = rotatedMap.length - 1 - i;
 							}
@@ -452,7 +474,7 @@ public class HW4 {
 		if (aiBrainEnabled) {
 			boolean aiCanWin = aiPlanTurn();
 
-			if (aiCanWin) {
+			if (aiCanWin && map[aiTurnRow][aiTurnCol] == DOT_EMPTY) {
 				map[aiTurnRow][aiTurnCol] = DOT_O;
 				System.out.println("Компьютер походил в точку " + (aiTurnCol + 1) + " " + (aiTurnRow + 1));
 				return;
@@ -468,7 +490,7 @@ public class HW4 {
 
 			boolean userCanWin = aiBlockUserTurn();
 
-			if (userCanWin) {
+			if (userCanWin && map[aiTurnRow][aiTurnCol] == DOT_EMPTY) {
 				map[aiTurnRow][aiTurnCol] = DOT_O;
 				System.out.println("Компьютер не хочет дать человеку победить!");
 				System.out.println("Компьютер походил в точку " + (aiTurnCol + 1) + " " + (aiTurnRow + 1));
