@@ -15,9 +15,6 @@ public class HW4 {
 	public static Scanner sc = new Scanner(System.in);
 	public static Random rand = new Random();
 
-	private static int maxNumberOfUserDots = 0; // максимальное количество фишек пользователя по горизонтали или по вертикали или диагонали
-	private static int maxNumberOfAiDots = 0; // максимальное количество фишек AI по горизонтали или по вертикали или диагонали
-
 	private static int aiTurnRow = -1;
 	private static int aiTurnCol = -1;
 
@@ -58,34 +55,79 @@ public class HW4 {
 	private static boolean aiPlanTurn() {
 		aiTurnRow = -1;
 		aiTurnCol = -1;
-		maxNumberOfAiDots = 0;
 
-		aiPlanTurnOnRow();
-		aiPlanTurnOnColumn();
-		aiPlanTurnOnMainDiagonal();
-		aiPlanTurnOnOppositeDiagonal();
-		return maxNumberOfAiDots + 1 == dotsToWin;
+		int[] rowBestTurn = aiPlanTurnOnRow();
+		int[] columnBestTurn = aiPlanTurnOnColumn();
+		int[] mainDigBestTurn = aiPlanTurnOnMainDiagonal();
+		int[] oppDigBestTurn = aiPlanTurnOnOppositeDiagonal();
+
+		int maxDots = 0;
+		if (rowBestTurn[2] > maxDots) {
+			maxDots = rowBestTurn[2];
+			aiTurnRow = rowBestTurn[0];
+			aiTurnCol = rowBestTurn[1];
+		}
+		if (columnBestTurn[2] > maxDots) {
+			maxDots = columnBestTurn[2];
+			aiTurnRow = columnBestTurn[0];
+			aiTurnCol = columnBestTurn[1];
+		}
+		if (mainDigBestTurn[2] > maxDots) {
+			maxDots = mainDigBestTurn[2];
+			aiTurnRow = mainDigBestTurn[0];
+			aiTurnCol = mainDigBestTurn[1];
+		}
+		if (oppDigBestTurn[2] > maxDots) {
+			maxDots = oppDigBestTurn[2];
+			aiTurnRow = oppDigBestTurn[0];
+			aiTurnCol = oppDigBestTurn[1];
+		}
+
+		return maxDots + 1 == dotsToWin;
 	}
 
 	private static boolean aiBlockUserTurn() {
 		// сбрасываем переменные
-		maxNumberOfUserDots = 0;
 		aiTurnRow = -1;
 		aiTurnCol = -1;
 
-		aiBlocksUserOnRow();
-		aiBlocksUserOnColumn();
-		aiBlocksUserOnMainDiagonal();
-		aiBlocksUserOnOppositeDiagonal();
+		int[] rowBestTurn = aiBlocksUserOnRow();
+		int[] columnBestTurn = aiBlocksUserOnColumn();
+		int[] mainDigBestTurn = aiBlocksUserOnMainDiagonal();
+		int[] oppDigBestTurn = aiBlocksUserOnOppositeDiagonal();
 
-		return maxNumberOfUserDots + 1 == dotsToWin;
+		int maxDots = 0;
+		if (rowBestTurn[2] > maxDots) {
+			maxDots = rowBestTurn[2];
+			aiTurnRow = rowBestTurn[0];
+			aiTurnCol = rowBestTurn[1];
+		}
+		if (columnBestTurn[2] > maxDots) {
+			maxDots = columnBestTurn[2];
+			aiTurnRow = columnBestTurn[0];
+			aiTurnCol = columnBestTurn[1];
+		}
+		if (mainDigBestTurn[2] > maxDots) {
+			maxDots = mainDigBestTurn[2];
+			aiTurnRow = mainDigBestTurn[0];
+			aiTurnCol = mainDigBestTurn[1];
+		}
+		if (oppDigBestTurn[2] > maxDots) {
+			maxDots = oppDigBestTurn[2];
+			aiTurnRow = oppDigBestTurn[0];
+			aiTurnCol = oppDigBestTurn[1];
+		}
+
+		return maxDots + 1 == dotsToWin;
 	}
 
-	private static void aiBlocksUserOnRow() {
+	private static int[] aiBlocksUserOnRow() {
+		int[] bestTurn = new int[3];
+		int maxNumberOfUserDots = 0;
 		// проверяем rows
 		for (int i = 0; i < map.length; i++) {
 			int currentNumberOfUserDots = 0; // текущее количество фишек полязователя в ряду
-			int currentNumberOfSymbols = 0; // общее количесво символов в ряду (DOT_X+ DOT_EMPTY)
+			int currentNumberOfEmptyDots = 0;
 			int[] bestTurnHolder = new int[2];
 
 			boolean hasPriority = false;
@@ -93,7 +135,6 @@ public class HW4 {
 			for (int j = 0; j < map.length; j++) {
 				if (map[i][j] == DOT_X) { // нашли фишку пользователя
 					currentNumberOfUserDots++;
-					currentNumberOfSymbols++;
 				} else if (map[i][j] == DOT_EMPTY) { // нашли пустую фишку
 					if (j > 0 && map[i][j - 1] == DOT_X && j < map.length - 1 && map[i][j + 1] == DOT_X) { // пытаемся быть ближе к пользовательской фишке
 						hasPriority = true;
@@ -103,29 +144,35 @@ public class HW4 {
 						bestTurnHolder[0] = i;
 						bestTurnHolder[1] = j;
 					}
-					currentNumberOfSymbols++;
+					currentNumberOfEmptyDots++;
 				} else { // нашли  фишку ai
-					currentNumberOfUserDots = 0;
-					if (map.length - currentNumberOfSymbols <= dotsToWin)
+					if (map.length - currentNumberOfUserDots - currentNumberOfEmptyDots <= dotsToWin)
 						break; // пользователь не сможет победить в этом ряду, переходим на следующую итерацию
-					currentNumberOfSymbols = 0;
+					currentNumberOfUserDots = 0;
+					currentNumberOfEmptyDots = 0;
 				}
 			}
 
 			if (currentNumberOfUserDots >= maxNumberOfUserDots) {
 				maxNumberOfUserDots = currentNumberOfUserDots;
-				aiTurnRow = bestTurnHolder[0];
-				aiTurnCol = bestTurnHolder[1];
+				bestTurn[0] = bestTurnHolder[0];
+				bestTurn[1] = bestTurnHolder[1];
+				bestTurn[2] = maxNumberOfUserDots;
 			}
 		}
+		return bestTurn;
 	}
 
-	private static void aiBlocksUserOnColumn() {
+	private static int[] aiBlocksUserOnColumn() {
+
+		int[] bestTurn = new int[3];
+		int maxNumberOfUserDots = 0;
 		char[][] rotatedMap = rotateMap();
+
 		for (int i = 0; i < rotatedMap.length; i++) {
 
 			int currentNumberOfUserDots = 0;
-			int currentNumberOfSymbols = 0;
+			int currentNumberOfEmptyDots = 0;
 			int[] bestTurnHolder = new int[2];
 
 			boolean hasPriority = false;
@@ -133,7 +180,6 @@ public class HW4 {
 			for (int j = 0; j < rotatedMap.length; j++) {
 				if (rotatedMap[i][j] == DOT_X) {
 					currentNumberOfUserDots++;
-					currentNumberOfSymbols++;
 				} else if (rotatedMap[i][j] == DOT_EMPTY) {
 					if (j > 0 && rotatedMap[i][j - 1] == DOT_X && j < rotatedMap.length - 1 && rotatedMap[i][j + 1] == DOT_X) { // пытаемся быть ближе к пользовательской фишке
 						hasPriority = true;
@@ -143,31 +189,35 @@ public class HW4 {
 						bestTurnHolder[0] = j; // здесь нужно использовать индексы до rotation
 						bestTurnHolder[1] = rotatedMap.length - 1 - i; // здесь нужно использовать индексы до rotation
 					}
-					currentNumberOfSymbols++;
+					currentNumberOfEmptyDots++;
 				} else {
-					currentNumberOfUserDots = 0;
-					if (rotatedMap.length - currentNumberOfSymbols <= dotsToWin) {
+					if (rotatedMap.length - currentNumberOfUserDots - currentNumberOfEmptyDots <= dotsToWin) {
 						break;
 					}
-					currentNumberOfSymbols = 0;
+					currentNumberOfUserDots = 0;
+					currentNumberOfEmptyDots = 0;
 				}
 			}
 
 			if (currentNumberOfUserDots >= maxNumberOfUserDots) {
 				maxNumberOfUserDots = currentNumberOfUserDots;
-				aiTurnRow = bestTurnHolder[0];
-				aiTurnCol = bestTurnHolder[1];
+				bestTurn[0] = bestTurnHolder[0];
+				bestTurn[1] = bestTurnHolder[1];
+				bestTurn[2] = maxNumberOfUserDots;
 			}
 		}
+		return bestTurn;
 	}
 
 
-	private static void aiBlocksUserOnMainDiagonal() {
+	private static int[] aiBlocksUserOnMainDiagonal() {
+		int[] bestTurn = new int[3];
+		int maxNumberOfUserDots = 0;
 		int counter = dotsToWin - map.length;
 		do {
 
 			int currentNumberOfUserDots = 0;
-			int numberOfSymbols = 0;
+			int currentNumberOfEmptyDots = 0;
 
 			int[] bestTurnHolder = new int[2];
 
@@ -178,7 +228,6 @@ public class HW4 {
 					if (j - i == counter) {
 						if (map[i][j] == DOT_X) {
 							currentNumberOfUserDots++;
-							numberOfSymbols++;
 						} else if (map[i][j] == DOT_EMPTY) {
 							if (((j > 0 && i > 0 && map[i - 1][counter + i - 1] == DOT_X) && (j < map.length - 1 && i < map.length - 1 && map[i + 1][counter + i + 1] == DOT_X))) {
 								hasPriority = true;
@@ -188,42 +237,44 @@ public class HW4 {
 								bestTurnHolder[0] = i;
 								bestTurnHolder[1] = j;
 							}
-							numberOfSymbols++;
+							currentNumberOfEmptyDots++;
 						} else {
+							if (map.length - currentNumberOfEmptyDots - currentNumberOfUserDots <= dotsToWin) break;
+							currentNumberOfEmptyDots = 0;
 							currentNumberOfUserDots = 0;
-							if (map.length - numberOfSymbols <= dotsToWin) break;
-							numberOfSymbols = 0;
 						}
 					}
 				}
 
 				if (currentNumberOfUserDots >= maxNumberOfUserDots) {
 					maxNumberOfUserDots = currentNumberOfUserDots;
-					aiTurnRow = bestTurnHolder[0];
-					aiTurnCol = bestTurnHolder[1];
+					bestTurn[0] = bestTurnHolder[0];
+					bestTurn[1] = bestTurnHolder[1];
+					bestTurn[2] = maxNumberOfUserDots;
 				}
 
 			}
 			counter++;
 		} while (counter <= map.length - dotsToWin);
+		return bestTurn;
 	}
 
-	private static void aiBlocksUserOnOppositeDiagonal() {
+	private static int[] aiBlocksUserOnOppositeDiagonal() {
+		int[] bestTurn = new int[3];
+		int maxNumberOfUserDots = 0;
 		char[][] rotatedMap = rotateMap();
 		int counter = dotsToWin - map.length;
 		do {
-			int currentNumberOfUserDots = 0;
 			int[] bestTurnHolder = new int[2];
-			int numberOfSymbols = 0;
+			int currentNumberOfUserDots = 0;
+			int currentNumberOfEmptyDots = 0;
 			boolean hasPriority = false;
 
 			for (int i = 0; i < rotatedMap.length; i++) {
-
 				for (int j = 0; j < rotatedMap.length; j++) {
 					if (j - i == counter) {
 						if (rotatedMap[i][j] == DOT_X) {
 							currentNumberOfUserDots++;
-							numberOfSymbols++;
 						} else if (rotatedMap[i][j] == DOT_EMPTY) {
 							if (((j > 0 && i > 0 && rotatedMap[i - 1][counter + i - 1] == DOT_X) && (j < rotatedMap.length - 1 && i < rotatedMap.length - 1 && rotatedMap[i + 1][counter + i + 1] == DOT_X))) {
 								hasPriority = true;
@@ -233,27 +284,33 @@ public class HW4 {
 								bestTurnHolder[0] = j;
 								bestTurnHolder[1] = rotatedMap.length - 1 - i;
 							}
-							numberOfSymbols++;
+							currentNumberOfEmptyDots++;
 						} else {
+							if (rotatedMap.length - currentNumberOfEmptyDots - currentNumberOfUserDots <= dotsToWin)
+								break;
+							currentNumberOfEmptyDots = 0;
 							currentNumberOfUserDots = 0;
-							if (rotatedMap.length - numberOfSymbols <= dotsToWin) break;
-							numberOfSymbols = 0;
 						}
 					}
 				}
 
 				if (currentNumberOfUserDots >= maxNumberOfUserDots) {
 					maxNumberOfUserDots = currentNumberOfUserDots;
-					aiTurnRow = bestTurnHolder[0];
-					aiTurnCol = bestTurnHolder[1];
+					bestTurn[0] = bestTurnHolder[0];
+					bestTurn[1] = bestTurnHolder[1];
+					bestTurn[2] = maxNumberOfUserDots;
 				}
 
 			}
 			counter++;
 		} while (counter <= rotatedMap.length - dotsToWin);
+		return bestTurn;
 	}
 
-	private static void aiPlanTurnOnRow() {
+	private static int[] aiPlanTurnOnRow() {
+		int[] bestTurn = new int[3];
+		int maxNumberOfAiDots = 0;
+
 		for (int i = 0; i < map.length; i++) {
 			int currentNumberOfAiDots = 0;
 			int currentNumberOfSymbols = 0;
@@ -276,13 +333,17 @@ public class HW4 {
 
 			if (currentNumberOfAiDots >= maxNumberOfAiDots) {
 				maxNumberOfAiDots = currentNumberOfAiDots;
-				aiTurnRow = bestTurnHolder[0];
-				aiTurnCol = bestTurnHolder[1];
+				bestTurn[0] = bestTurnHolder[0];
+				bestTurn[1] = bestTurnHolder[1];
+				bestTurn[2] = maxNumberOfAiDots;
 			}
 		}
+		return bestTurn;
 	}
 
-	private static void aiPlanTurnOnColumn() {
+	private static int[] aiPlanTurnOnColumn() {
+		int[] bestTurn = new int[3];
+		int maxNumberOfAiDots = 0;
 		char[][] rotatedMap = rotateMap();
 
 		for (int i = 0; i < rotatedMap.length; i++) {
@@ -307,13 +368,17 @@ public class HW4 {
 
 			if (currentNumberOfAiDots >= maxNumberOfAiDots) {
 				maxNumberOfAiDots = currentNumberOfAiDots;
-				aiTurnRow = bestTurnHolder[0];
-				aiTurnCol = bestTurnHolder[1];
+				bestTurn[0] = bestTurnHolder[0];
+				bestTurn[1] = bestTurnHolder[1];
+				bestTurn[2] = maxNumberOfAiDots;
 			}
 		}
+		return bestTurn;
 	}
 
-	private static void aiPlanTurnOnMainDiagonal() {
+	private static int[] aiPlanTurnOnMainDiagonal() {
+		int[] bestTurn = new int[3];
+		int maxNumberOfAiDots = 0;
 		int counter = dotsToWin - map.length;
 		do {
 			int currentNumberOfAiDots = 0;
@@ -340,15 +405,19 @@ public class HW4 {
 
 				if (currentNumberOfAiDots >= maxNumberOfAiDots) {
 					maxNumberOfAiDots = currentNumberOfAiDots;
-					aiTurnRow = bestTurnHolder[0];
-					aiTurnCol = bestTurnHolder[1];
+					bestTurn[0] = bestTurnHolder[0];
+					bestTurn[1] = bestTurnHolder[1];
+					bestTurn[2] = maxNumberOfAiDots;
 				}
 			}
 			counter++;
 		} while (counter <= map.length - dotsToWin);
+		return bestTurn;
 	}
 
-	private static void aiPlanTurnOnOppositeDiagonal() {
+	private static int[] aiPlanTurnOnOppositeDiagonal() {
+		int[] bestTurn = new int[3];
+		int maxNumberOfAiDots = 0;
 		char[][] rotatedMap = rotateMap();
 		int counter = dotsToWin - rotatedMap.length;
 
@@ -377,12 +446,14 @@ public class HW4 {
 
 				if (currentNumberOfAiDots >= maxNumberOfAiDots) {
 					maxNumberOfAiDots = currentNumberOfAiDots;
-					aiTurnRow = bestTurnHolder[0];
-					aiTurnCol = bestTurnHolder[1];
+					bestTurn[0] = bestTurnHolder[0];
+					bestTurn[1] = bestTurnHolder[1];
+					bestTurn[2] = maxNumberOfAiDots;
 				}
 			}
 			counter++;
 		} while (counter <= rotatedMap.length - dotsToWin);
+		return bestTurn;
 	}
 
 
@@ -483,7 +554,7 @@ public class HW4 {
 				y = aiTurnRow;
 
 				// bad workaround !!!
-				if (map[x][y] != DOT_EMPTY) {
+				if (x == -1 || map[x][y] != DOT_EMPTY) {
 					x = -1;
 				}
 			}
