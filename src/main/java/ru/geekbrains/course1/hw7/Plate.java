@@ -1,4 +1,4 @@
-package ru.geekbrains.hw7;
+package ru.geekbrains.course1.hw7;
 
 public class Plate {
 

@@ -1,4 +1,4 @@
-package ru.geekbrains;
+package ru.geekbrains.course1;
 
 public class HW1 {
 	

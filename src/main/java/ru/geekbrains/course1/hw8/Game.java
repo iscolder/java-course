@@ -1,4 +1,4 @@
-package ru.geekbrains.hw8;
+package ru.geekbrains.course1.hw8;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

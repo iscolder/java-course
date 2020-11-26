@@ -1,4 +1,4 @@
-package ru.geekbrains.hw6;
+package ru.geekbrains.course1.hw6;
 
 public class Main {
 

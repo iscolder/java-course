@@ -1,4 +1,4 @@
-package ru.geekbrains.hw5;
+package ru.geekbrains.course1.hw5;
 
 public class Person {
 	private String fullName;
