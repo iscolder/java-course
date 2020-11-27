@@ -9,14 +9,11 @@ public class MyArrayList<T extends Comparable<T>> {
 
 	private static final int DEFAULT_CAPACITY = 10;
 
-
 	public MyArrayList(int capacity) {
 		if (capacity <= 0) {
 			throw new IllegalArgumentException("capacity: " + capacity);
 		}
-
 		list = (T[]) new Comparable[capacity];
-
 	}
 
 	public MyArrayList() {
@@ -24,8 +21,19 @@ public class MyArrayList<T extends Comparable<T>> {
 	}
 
 	public void add(T item) {
-		list[size] = item;
-		size++;
+		list[size++] = item;
+		if (size >= list.length) {
+			increaseList();
+		}
+	}
+
+	private void increaseList() {
+		T[] newList = (T[]) new Comparable[2 * list.length];
+		for (int i = 0; i < list.length; i++) {
+			newList[i] = list[i];
+		}
+		list = newList;
+		newList = null;
 	}
 
 	public void add(int index, T item) {
@@ -39,13 +47,24 @@ public class MyArrayList<T extends Comparable<T>> {
 		size++;
 	}
 
+	public void addAll(T[] items) {
+		if (items == null) return;
+		for (int i = 0; i < items.length; i++) {
+			add(items[i]);
+		}
+	}
+
 	public void remove(int index) {
-		checkIndex(index);
+		if (index < 0 || index >= size) {
+			throw new IllegalArgumentException("index: " + index);
+		}
 		for (int i = index; i < size - 1; i++) {
 			list[i] = list[i + 1];
 		}
-		size--;
-		list[size] = null; // !!!
+		if (size != 0) {
+			size--;
+			list[size] = null; // !!!
+		}
 	}
 
 	public int size() {
@@ -71,21 +90,18 @@ public class MyArrayList<T extends Comparable<T>> {
 	}
 
 	public T get(int index) {
-		checkIndex(index);
+		if (index < 0 || index >= size) {
+			throw new IllegalArgumentException("index: " + index);
+		}
 		return list[index];
 	}
 
 	public void set(int index, T item) {
-		checkIndex(index);
-		list[index] = item;
-	}
-
-	private void checkIndex(int index) {
-		if (index < 0 || index > size) {
+		if (index < 0 || index >= size) {
 			throw new IllegalArgumentException("index: " + index);
 		}
+		list[index] = item;
 	}
-
 
 	@Override
 	public String toString() {
@@ -104,17 +120,6 @@ public class MyArrayList<T extends Comparable<T>> {
 		return sb.toString();
 	}
 
-
-	private boolean less(T item1, T item2) {
-		return item1.compareTo(item2) < 0;
-	}
-
-	private void swap(int index1, int index2) {
-		T temp = list[index1];
-		list[index1] = list[index2];
-		list[index2] = temp;
-	}
-
 	public void selectionSort() {
 		int iMin;
 		for (int i = 0; i < size - 1; i++) {
@@ -124,11 +129,14 @@ public class MyArrayList<T extends Comparable<T>> {
 					iMin = j;
 				}
 			}
-			swap(i, iMin);
+			if (i != iMin) {
+				swap(i, iMin);
+			}
 		}
 	}
 
 	public void selectionSort(Comparator<T> comparator) {
+		checkComparator(comparator);
 		int iMin;
 		for (int i = 0; i < size - 1; i++) {
 			iMin = i;
@@ -141,8 +149,6 @@ public class MyArrayList<T extends Comparable<T>> {
 		}
 	}
 
-
-
 	// Good sort
 	public void insertionSort() {
 		T key;
@@ -150,6 +156,20 @@ public class MyArrayList<T extends Comparable<T>> {
 			int j = i;
 			key = list[i];
 			while (j > 0 && less(key, list[j - 1])) {
+				list[j] = list[j - 1];
+				j--;
+			}
+			list[j] = key;
+		}
+	}
+
+	public void insertionSort(Comparator<T> comparator) {
+		checkComparator(comparator);
+		T key;
+		for (int i = 1; i < size; i++) {
+			int j = i;
+			key = list[j];
+			while (j > 0 && comparator.compare(key, list[j - 1]) < 0) {
 				list[j] = list[j - 1];
 				j--;
 			}
@@ -173,5 +193,37 @@ public class MyArrayList<T extends Comparable<T>> {
 		}
 	}
 
+	public void bubbleSort(Comparator<T> comparator) {
+		checkComparator(comparator);
+		boolean isSwap;
+		for (int i = size - 1; i > 0; i--) {
+			isSwap = false;
+			for (int j = 0; j < i; j++) {
+				if (comparator.compare(list[j + 1], list[j]) < 0) {
+					swap(j, j + 1);
+					isSwap = true;
+				}
+			}
+			if (!isSwap) {
+				break;
+			}
+		}
+	}
+
+	private boolean less(T item1, T item2) {
+		return item1.compareTo(item2) < 0;
+	}
+
+	private void swap(int index1, int index2) {
+		T temp = list[index1];
+		list[index1] = list[index2];
+		list[index2] = temp;
+	}
+
+	private void checkComparator(Comparator<T> comparator) {
+		if (comparator == null) {
+			throw new IllegalArgumentException("comparator cannot be null");
+		}
+	}
 
 }
