@@ -1,52 +1,61 @@
 package ru.geekbrains.algorithms.lesson3;
 
-import java.util.Comparator;
-
 public class Main {
-
 
 	public static void main(String[] args) {
 
-		MyStack<Integer> stack = new MyStack<>(1);
-		stack.push(1);
-		stack.push(2);
-		stack.push(3);
-		stack.push(4);
+		ReverseStringTransformer transformer = new ReverseStringTransformer();
+		String result = transformer.transform("12345-6789");
+		System.out.println("Reverse string = " + result);
 
-		System.out.println(stack.peek());
-
-		for (int i = 0; i < 4; i++) {
-			System.out.println(stack.pop());
-		}
-
-
-		MyQueue<Integer> queue = new MyQueue<>(5);
-
+		MyDequeue<Integer> queue = new MyDequeue<>(5);
+		queue.insert(1);
 		System.out.println(queue);
-
-
-		queue.insert(5);
-		queue.insert(3);
 		queue.insert(2);
-
-		System.out.println(queue.remove());
-
+		System.out.println(queue);
+		queue.insert(3);
+		System.out.println(queue);
+		queue.insert(4);
+		System.out.println(queue);
+		queue.insert(5);
 		System.out.println(queue);
 
+		System.out.println("Pop: " + queue.pop());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.pop());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.pop());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.pop());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.pop());
+		System.out.println(queue);
 
-		MyPriorityQueue<Integer> priorityQueue = new MyPriorityQueue<Integer>(Comparator.reverseOrder());
+		System.out.println();
+		System.out.println("Reverse:");
+		System.out.println();
 
-		priorityQueue.insert(1);
-		priorityQueue.insert(6);
-		priorityQueue.insert(2);
-		priorityQueue.insert(8);
-		priorityQueue.insert(0);
+		queue.insertReverse(1);
+		System.out.println(queue);
+		queue.insertReverse(2);
+		System.out.println(queue);
+		queue.insertReverse(3);
+		System.out.println(queue);
+		queue.insertReverse(4);
+		System.out.println(queue);
+		queue.insertReverse(5);
+		System.out.println(queue);
 
-
-		for (int i = 0; i < 5; i++) {
-			System.out.println(priorityQueue.remove());
-		}
-
+		System.out.println("Pop: " + queue.popReverse());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.popReverse());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.popReverse());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.popReverse());
+		System.out.println(queue);
+		System.out.println("Pop: " + queue.popReverse());
+		System.out.println(queue);
 
 	}
 }
