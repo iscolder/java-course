@@ -1,10 +1,7 @@
-package ru.geekbrains.course2;
+package ru.geekbrains.course2.hw1;
 
-import ru.geekbrains.course2.obstacles.Cross;
-import ru.geekbrains.course2.obstacles.Obstacle;
-import ru.geekbrains.course2.obstacles.Wall;
-import ru.geekbrains.course2.obstacles.Water;
-import ru.geekbrains.course2.participants.*;
+import ru.geekbrains.course2.hw1.participants.*;
+import ru.geekbrains.course2.hw1.obstacles.*;
 
 public class Main {
 

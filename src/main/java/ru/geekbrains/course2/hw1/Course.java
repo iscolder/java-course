@@ -1,7 +1,7 @@
-package ru.geekbrains.course2;
+package ru.geekbrains.course2.hw1;
 
-import ru.geekbrains.course2.obstacles.Obstacle;
-import ru.geekbrains.course2.participants.Participant;
+import ru.geekbrains.course2.hw1.obstacles.Obstacle;
+import ru.geekbrains.course2.hw1.participants.Participant;
 
 public class Course {
 	private final Obstacle[] obstacles;

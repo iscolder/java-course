@@ -1,6 +1,6 @@
-package ru.geekbrains.course2;
+package ru.geekbrains.course2.hw1;
 
-import ru.geekbrains.course2.participants.Participant;
+import ru.geekbrains.course2.hw1.participants.*;
 
 public class Team {
 	private final String name;

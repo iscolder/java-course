@@ -1,4 +1,4 @@
-package ru.geekbrains.course2.participants;
+package ru.geekbrains.course2.hw1.participants;
 
 public class Duck extends Animal {
     public Duck(String name, Color color) {

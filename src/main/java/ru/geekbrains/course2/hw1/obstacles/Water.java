@@ -1,7 +1,7 @@
-package ru.geekbrains.course2.obstacles;
+package ru.geekbrains.course2.hw1.obstacles;
 
 
-import ru.geekbrains.course2.participants.Participant;
+import ru.geekbrains.course2.hw1.participants.Participant;
 
 public class Water extends Obstacle {
     private final int length;

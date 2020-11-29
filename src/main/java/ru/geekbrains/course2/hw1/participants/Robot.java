@@ -1,4 +1,4 @@
-package ru.geekbrains.course2.participants;
+package ru.geekbrains.course2.hw1.participants;
 
 public class Robot extends Participant {
 	private final String serialNumber;

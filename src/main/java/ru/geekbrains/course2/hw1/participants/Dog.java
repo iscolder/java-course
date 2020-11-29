@@ -1,4 +1,4 @@
-package ru.geekbrains.course2.participants;
+package ru.geekbrains.course2.hw1.participants;
 
 public class Dog extends Animal {
     public Dog(String name, Color color) {
