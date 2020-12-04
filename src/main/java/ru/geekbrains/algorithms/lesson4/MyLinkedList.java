@@ -1,6 +1,8 @@
 package ru.geekbrains.algorithms.lesson4;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public class MyLinkedList<T> implements Iterable<T> {
@@ -8,6 +10,8 @@ public class MyLinkedList<T> implements Iterable<T> {
 	private Node first;
 	private Node last;
 	private int size;
+
+	private int changeCount;
 
 	public MyLinkedList() {
 		first = null;
@@ -19,9 +23,73 @@ public class MyLinkedList<T> implements Iterable<T> {
 		return new Iter();
 	}
 
+	public ListIterator<T> listIterator() {
+		return new ListIter();
+	}
+
+	private class ListIter implements ListIterator<T> {
+		Node current = new Node(null, first);
+		int index = 0;
+
+		@Override
+		public boolean hasNext() {
+			return current.getNext() != null;
+		}
+
+		@Override
+		public T next() {
+			current = current.getNext();
+			T value = current.getValue();
+			index++;
+			return value;
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return current.getPrev() != null;
+		}
+
+		@Override
+		public T previous() {
+			T value = current.getValue();
+			current = current.getPrev();
+			index--;
+			return value;
+		}
+
+		@Override
+		public int nextIndex() {
+			return hasNext() ? index : size;
+		}
+
+		@Override
+		public int previousIndex() {
+			return hasPrevious() ? index - 1 : 0;
+		}
+
+		@Override
+		public void remove() {
+			MyLinkedList.this.remove(current.getValue());
+			if (index != 0) {
+				index--;
+			}
+		}
+
+		@Override
+		public void set(T t) {
+			current.setValue(t);
+		}
+
+		@Override
+		public void add(T t) {
+			insert(index, t);
+		}
+	}
+
 	private class Iter implements Iterator<T> {
 
 		Node current = new Node(null, first);
+		int iterChangeCount = changeCount;
 
 		@Override
 		public boolean hasNext() {
@@ -32,6 +100,15 @@ public class MyLinkedList<T> implements Iterable<T> {
 		public T next() {
 			current = current.getNext();
 			return current.getValue();
+		}
+
+		@Override
+		public void remove() {
+			if (iterChangeCount != changeCount) {
+				throw new ConcurrentModificationException();
+			}
+			MyLinkedList.this.remove(current.getValue());
+			iterChangeCount++;
 		}
 	}
 
@@ -98,6 +175,7 @@ public class MyLinkedList<T> implements Iterable<T> {
 		}
 		first = newNode; // first обновился
 		size++;
+		changeCount++;
 	}
 
 	public void insertLast(T item) {
@@ -110,6 +188,7 @@ public class MyLinkedList<T> implements Iterable<T> {
 		}
 		last = newNode;
 		size++;
+		changeCount++;
 	}
 
 	public T getFirst() {
@@ -135,6 +214,7 @@ public class MyLinkedList<T> implements Iterable<T> {
 			first.setPrev(null);
 		}
 		size--;
+		changeCount++;
 		return oldFirst;
 	}
 
@@ -147,6 +227,7 @@ public class MyLinkedList<T> implements Iterable<T> {
 		}
 		last = last.getPrev();
 		size--;
+		changeCount++;
 		return oldLast;
 	}
 
@@ -191,6 +272,7 @@ public class MyLinkedList<T> implements Iterable<T> {
 		current.setNext(newNode);
 		newNode.getNext().setPrev(newNode);
 		size++;
+		changeCount++;
 	}
 
 	public T remove(int index) {
@@ -213,6 +295,7 @@ public class MyLinkedList<T> implements Iterable<T> {
 		current.getPrev().setNext(current.getNext());
 		current.getNext().setPrev(current.getPrev());
 		size--;
+		changeCount++;
 		return temp;
 	}
 
@@ -238,6 +321,7 @@ public class MyLinkedList<T> implements Iterable<T> {
 		current.getPrev().setNext(current.getNext());
 		current.getNext().setPrev(current.getPrev());
 		size--;
+		changeCount++;
 		return true;
 	}
 
