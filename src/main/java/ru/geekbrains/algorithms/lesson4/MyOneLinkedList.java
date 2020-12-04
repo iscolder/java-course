@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 public class MyOneLinkedList<T> {
 
-	private Node first;
+	private Node first; // link to first element
 	private int size;
 
 	public MyOneLinkedList() {
@@ -70,11 +70,11 @@ public class MyOneLinkedList<T> {
 		return old;
 	}
 
-	public final int indexOf(T item) {
+	public final int indexOf(T value) {
 		Node current = first;
 		int index = 0;
 		while (current != null) {
-			if (current.getValue().equals(item)) {
+			if (current.getValue().equals(value)) {
 				return index;
 			}
 			current = current.getNext();
@@ -87,12 +87,12 @@ public class MyOneLinkedList<T> {
 		return indexOf(item) > -1;
 	}
 
-	public void insert(int index, T item) {
+	public void insert(int index, T value) {
 		if (index < 0 || index > size) {
 			throw new IllegalArgumentException();
 		}
 		if (index == 0) {
-			insertFirst(item);
+			insertFirst(value);
 			return;
 		}
 		Node current = first;
@@ -101,7 +101,7 @@ public class MyOneLinkedList<T> {
 			current = current.getNext();
 			i++;
 		}
-		Node newNode = new Node(item);
+		Node newNode = new Node(value);
 		newNode.setNext(current.getNext());
 		current.setNext(newNode);
 		size++;

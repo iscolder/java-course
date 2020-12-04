@@ -90,10 +90,10 @@ public class MyLinkedList<T> implements Iterable<T> {
 
 	public void insertFirst(T item) {
 		Node newNode = new Node(item);
-		newNode.setNext(first); // текущий first
 		if (isEmpty()) {
 			last = newNode;
 		} else {
+			newNode.setNext(first); // текущий first
 			first.setPrev(newNode);
 		}
 		first = newNode; // first обновился
