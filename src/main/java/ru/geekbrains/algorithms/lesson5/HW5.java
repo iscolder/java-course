@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Main {
+public class HW5 {
 
 	private static final int MAX_WEIGHT = 20;
 	private static List<Item> bestItems = new ArrayList<>();
@@ -64,7 +64,6 @@ public class Main {
 		List<Item> temp = new ArrayList<>();
 		for (int i = 0; i < start; i++) {
 			temp.add(items[i]);
-			System.out.println(temp);
 		}
 
 		if (fitWeight(temp) && getTotalPrice(temp) > getTotalPrice(bestItems)) {
@@ -74,7 +73,7 @@ public class Main {
 		for (int i = start; i < items.length; i++) {
 			swap(items, start, i);
 			permutation(items, start + 1);
-			swap(items, start, i);
+			//swap(items, start, i);
 		}
 	}
 
@@ -89,55 +88,4 @@ public class Main {
 	private static double exponentiation(int number, double power) {
 		return power == 0 ? 1 : power > 0 ? number * exponentiation(number, power - 1) : 1d / number * exponentiation(number, power + 1);
 	}
-
-
-	static int factorial(int n) {
-		if (n <= 1) {
-			return 1;
-		}
-		return factorial(n - 1) * n;
-	}
-
-
-	static long fibo(int n) {
-		long a = 1;
-		long b = 1;
-
-		for (int i = 3; i <= n; i++) {
-			b = a + b;
-			a = b - a;
-		}
-
-		return b;
-	}
-
-	static long recFibo(int n) {
-		if (n <= 2) {
-			return 1;
-		}
-		return recFibo(n - 2) + recFibo(n - 1);
-	}
-
-	static int triangle(int n) {
-		int sum = 0;
-		for (int i = 0; i <= n; i++) {
-			sum += i;
-		}
-		return sum;
-	}
-
-	static int recTriangle(int n) {
-		if (n == 1) {
-			return 1;
-		}
-		return recTriangle(n - 1) + n;
-	}
-
-	static int multiply(int n, int d) {
-		if (n == 1) {
-			return d;
-		}
-		return multiply(n - 1, d) + d;
-	}
-
 }
