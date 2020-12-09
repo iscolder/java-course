@@ -86,6 +86,10 @@ public class Main {
 		return items.stream().collect(Collectors.summarizingInt(Item::getPrice)).getSum();
 	}
 
+	private static double exponentiation(int number, double power) {
+		return power == 0 ? 1 : power > 0 ? number * exponentiation(number, power - 1) : 1d / number * exponentiation(number, power + 1);
+	}
+
 
 	static int factorial(int n) {
 		if (n <= 1) {
