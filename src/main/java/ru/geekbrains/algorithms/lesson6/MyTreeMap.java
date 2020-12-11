@@ -12,11 +12,13 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
 		Node right;
 		Node left;
 		int size;
+		int height;
 
 		public Node(Key key, Value value) {
 			this.key = key;
 			this.value = value;
 			size = 1;
+			height = 0;
 		}
 
 	}
@@ -53,6 +55,7 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
 			node.right = put(node.right, key, value);
 		}
 		node.size = size(node.left) + size(node.right) + 1;
+		node.height = height(node.left) > height(node.right) ? height(node.left) + 1 : height(node.right) + 1;
 		return node;
 	}
 
@@ -83,6 +86,17 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
 			return 0;
 		}
 		return node.size;
+	}
+
+	public int height() {
+		return height(root);
+	}
+
+	private int height(Node node) {
+		if (node == null) {
+			return 0;
+		}
+		return node.height;
 	}
 
 	private void isKeyNotNull(Key key) {
@@ -117,8 +131,36 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
 		return min(node.left);
 	}
 
-	// HW max
+	public Key maxKey() {
+		if (isEmpty()) {
+			throw new NoSuchElementException("Map is null");
+		}
+		return max(root).key;
+	}
 
+	private Node max(Node node) {
+		if (node.right == null) {
+			return node;
+		}
+		return max(node.right);
+	}
+
+	public void deleteMax() {
+		if (isEmpty()) {
+			throw new NoSuchElementException("map empty");
+		}
+		root = deleteMax(root);
+	}
+
+	private Node deleteMax(Node node) {
+		if (node.right == null) {
+			return node.left;
+		}
+		node.right = deleteMax(node.right);
+		node.size = size(node.left) + size(node.right) + 1;
+		node.height = height(node.left) > height(node.right) ? height(node.left) + 1 : height(node.right) + 1;
+		return node;
+	}
 
 	public void deleteMin() {
 		if (isEmpty()) {
@@ -133,6 +175,7 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
 		}
 		node.left = deleteMin(node.left);
 		node.size = size(node.left) + size(node.right) + 1;
+		node.height = height(node.left) > height(node.right) ? height(node.left) + 1 : height(node.right) + 1;
 		return node;
 	}
 
@@ -167,7 +210,22 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
 			node.left = temp.left;
 		}
 		node.size = size(node.left) + size(node.right) + 1;
+		node.height = height(node.left) > height(node.right) ? height(node.left) + 1 : height(node.right) + 1;
 		return node;
+	}
+
+	public boolean isBalanced() {
+		return isBalanced(root);
+	}
+
+	private boolean isBalanced(Node node) {
+		if (node == null) {
+			return true;
+		}
+		if (Math.abs(height(node.left) - height(node.right)) > 1) {
+			return false;
+		}
+		return isBalanced(node.left) && isBalanced(node.right);
 	}
 
 }
