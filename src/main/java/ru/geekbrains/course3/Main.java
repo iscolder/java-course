@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
-	
+
 	public static void main(String[] args) {
 		Integer[] array = new Integer[]{1, 2, 3};
 		swap(array, 0, 2);
