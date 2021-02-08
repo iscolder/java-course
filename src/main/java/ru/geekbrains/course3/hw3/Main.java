@@ -6,6 +6,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
 
@@ -55,6 +57,8 @@ public class Main {
 
 	private static class ChatApplication {
 
+		private static final Logger logger = Logger.getLogger(ChatApplication.class.getName());
+
 		private volatile static ChatApplication instance;
 
 		private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
@@ -69,6 +73,7 @@ public class Main {
 				synchronized (ChatApplication.class) {
 					if (instance == null) {
 						instance = new ChatApplication();
+						logger.log(Level.INFO, "Chat is launched");
 					}
 				}
 			}
@@ -81,6 +86,7 @@ public class Main {
 			try {
 				users.add(user);
 				user.active = true;
+				logger.log(Level.INFO, user.name + " joined");
 			} finally {
 				lock.unlock();
 			}
@@ -92,6 +98,7 @@ public class Main {
 			try {
 				users.remove(user);
 				user.active = false;
+				logger.log(Level.INFO, user.name + " left");
 			} finally {
 				lock.unlock();
 			}
@@ -111,6 +118,8 @@ public class Main {
 
 	private static class DisplayChat implements Runnable {
 
+		private static final Logger logger = Logger.getLogger(DisplayChat.class.getName());
+
 		private static final String CHAT_FILE = System.getProperty("java.io.tmpdir") + File.separator + "chat.ser";
 
 		private volatile static DisplayChat instance;
@@ -127,6 +136,7 @@ public class Main {
 				synchronized (ChatApplication.class) {
 					if (instance == null) {
 						instance = new DisplayChat(messageQueue);
+						logger.info("Chat is visible");
 					}
 				}
 			}
@@ -143,15 +153,15 @@ public class Main {
 
 		@Override
 		public void run() {
-			System.out.println("CHAT START");
+			logger.info("CHAT START");
 
 			downloadChatFromFile();
-			buffer.forEach(System.out::println);
+			buffer.forEach(logger::info);
 
-			System.out.println("***************************************");
-			System.out.println("***************************************");
-			System.out.println("***************************************");
-			System.out.println("***************************************");
+			logger.info("***************************************");
+			logger.info("***************************************");
+			logger.info("***************************************");
+			logger.info("***************************************");
 
 			int count = 0;
 			while (count != 20) {
@@ -162,7 +172,7 @@ public class Main {
 						message.setContent(c.apply(message.getContent()));
 					}
 					buffer.add(message.toString());
-					System.out.println(message);
+					logger.info(message.toString());
 				}
 				message = messageQueue.getMessages().poll();
 				if (message != null) {
@@ -170,7 +180,7 @@ public class Main {
 						message.setContent(c.apply(message.getContent()));
 					}
 					buffer.add(message.toString());
-					System.out.println(message);
+					logger.info(message.toString());
 				}
 				try {
 					Thread.sleep(2000);
@@ -181,13 +191,13 @@ public class Main {
 			}
 
 			saveChatToFile();
-			System.out.println("CHAT OVER");
+			logger.info("CHAT OVER");
 		}
 
 		@SuppressWarnings("unchecked")
 		private void downloadChatFromFile() {
 			if (new File(CHAT_FILE).exists()) {
-				System.out.println("Download Chat History");
+				logger.info("Download Chat History");
 				try (ObjectInputStream ios = new ObjectInputStream(new FileInputStream(CHAT_FILE))) {
 					buffer = (List<String>) ios.readObject();
 				} catch (IOException | ClassNotFoundException e) {
@@ -198,7 +208,6 @@ public class Main {
 
 		private void saveChatToFile() {
 			File file = new File(CHAT_FILE);
-			System.out.println(file.getAbsolutePath());
 			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file.getAbsolutePath()))){
 				oos.writeObject(buffer);
 			} catch (IOException e) {
@@ -236,6 +245,8 @@ public class Main {
 
 	private static class User implements Runnable {
 
+		private static final Logger logger = Logger.getLogger(User.class.getName());
+
 		private final int id;
 		private final String name;
 		private final MessageQueue messageQueue;
@@ -264,7 +275,7 @@ public class Main {
 				count++;
 			}
 
-			System.out.println(name + " LEAVES THE CHAT");
+			logger.info(name + " LEAVES THE CHAT");
 		}
 
 		public void sendMessage(String content) {
